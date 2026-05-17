@@ -125,7 +125,7 @@ function App() {
 
         <footer className="w-full py-4 text-center text-xs text-[#99907C] border-t border-glass-border/30 bg-[#0d0d0f]/20 relative z-30 flex items-center justify-center gap-1.5 flex-wrap">
           <span>Desenvolvido por:</span>
-          <a href="mailto:leandrobessa@hotmail.com" className="text-[#D4AF37] hover:underline font-bold transition-all">Leandro Bessa</a>
+          <a href="mailto:leandrobessa@hotmail.com" className="text-[#D4AF37] hover:underline font-bold transition-all">Leandro Pimenttel</a>
         </footer>
       </main>
     </div>
