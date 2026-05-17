@@ -84,6 +84,19 @@ const Chancellery = () => {
           const initialAtt = {};
           data.forEach(m => { initialAtt[m.id] = true; });
           setAttendance(initialAtt);
+
+          // Auto-detect Venerável and Chanceler from database if config not customized
+          const veneravelMember = data.find(m => m.cargoLoja && m.cargoLoja.toLowerCase() === 'venerável mestre');
+          const chancelerMember = data.find(m => m.cargoLoja && m.cargoLoja.toLowerCase() === 'chanceler');
+          setCertConfig(prev => {
+            const hasCustom = localStorage.getItem('certConfig');
+            if (hasCustom) return prev;
+            return {
+              ...prev,
+              assinaturaVM: veneravelMember ? `Irmão ${veneravelMember.nome}` : prev.assinaturaVM,
+              assinaturaChanceler: chancelerMember ? `Irmão ${chancelerMember.nome}` : prev.assinaturaChanceler
+            };
+          });
         } else {
           throw new Error('Fallback to mock');
         }
@@ -92,6 +105,19 @@ const Chancellery = () => {
         const initialAtt = {};
         mockMembers.forEach(m => { initialAtt[m.id] = true; });
         setAttendance(initialAtt);
+
+        // Auto-detect for mock fallback
+        const veneravelMember = mockMembers.find(m => m.cargoLoja && m.cargoLoja.toLowerCase() === 'venerável mestre');
+        const chancelerMember = mockMembers.find(m => m.cargoLoja && m.cargoLoja.toLowerCase() === 'chanceler');
+        setCertConfig(prev => {
+          const hasCustom = localStorage.getItem('certConfig');
+          if (hasCustom) return prev;
+          return {
+            ...prev,
+            assinaturaVM: veneravelMember ? `Irmão ${veneravelMember.nome}` : prev.assinaturaVM,
+            assinaturaChanceler: chancelerMember ? `Irmão ${chancelerMember.nome}` : prev.assinaturaChanceler
+          };
+        });
       } finally {
         setLoading(false);
       }
@@ -194,6 +220,10 @@ const Chancellery = () => {
 
   // Embeddable dynamic landscape printing CSS
   const printStyles = `
+    @page {
+      size: landscape;
+      margin: 0;
+    }
     @media print {
       body * {
         visibility: hidden !important;
@@ -203,16 +233,19 @@ const Chancellery = () => {
       }
       #print-certificate-area {
         position: fixed !important;
-        left: 50% !important;
-        top: 50% !important;
-        transform: translate(-50%, -50%) !important;
+        left: 0 !important;
+        top: 0 !important;
+        transform: none !important;
         width: 297mm !important; /* A4 landscape width */
         height: 210mm !important; /* A4 landscape height */
         margin: 0 !important;
-        padding: 22mm 20mm !important;
+        padding: 16mm 20mm !important;
         box-shadow: none !important;
-        border: 10px double #D4AF37 !important;
+        border: none !important;
         background-color: #FAF8F5 !important;
+        background-size: 100% 100% !important;
+        background-repeat: no-repeat !important;
+        background-position: center !important;
         color: #1e293b !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
@@ -598,7 +631,7 @@ const Chancellery = () => {
                     <input
                       type="text"
                       value={certConfig.assinaturaVM}
-                      onChange={(e) => setCertConfig({...certConfig, VM: e.target.value})}
+                      onChange={(e) => setCertConfig({...certConfig, assinaturaVM: e.target.value})}
                       className="modern-input"
                       placeholder="Nome do Venerável"
                       style={{ paddingLeft: '12px', background: '#131316', border: '1px solid rgba(255,255,255,0.1)' }}
@@ -962,7 +995,7 @@ const Chancellery = () => {
 
       {/* Printable Certificate Modal Preview */}
       {printVisitor && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-modal animate-fade-in no-print">
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-modal animate-fade-in">
           <div className="bg-[#121214] border border-glass-border rounded-2xl p-6 shadow-2xl relative w-full max-w-4xl animate-scale-up">
             
             {/* Header controls (Hidden during print) */}
