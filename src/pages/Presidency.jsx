@@ -193,7 +193,8 @@ const Presidency = () => {
                     <img 
                       src={admin.fotoVeneravel} 
                       alt="" 
-                      className="w-24 h-24 rounded-full border-2 border-accent-gold p-1 mb-3 bg-bg-secondary object-cover" 
+                      className="rounded-full border-2 border-accent-gold p-1 mb-3 bg-bg-secondary" 
+                      style={{ width: '96px', height: '96px', minWidth: '96px', minHeight: '96px', objectFit: 'cover' }}
                     />
                     <h4 className="text-sm font-bold text-accent-gold uppercase tracking-wider">Venerável Mestre</h4>
                     <p className="text-lg font-bold text-white leading-tight mt-1">{admin.veneravel}</p>

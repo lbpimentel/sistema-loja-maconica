@@ -8,8 +8,8 @@ const MemberCard = ({ member, delay, onEdit }) => (
   <GlassCard delay={delay} className="p-4 mb-4">
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div className="flex items-center gap-4 cursor-pointer" onClick={() => onEdit(member)}>
-        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-accent-gold/30 flex-shrink-0">
-          <img src={member.foto} alt={member.nome} className="w-full h-full object-cover" />
+        <div className="rounded-full overflow-hidden border-2 border-accent-gold/30 flex-shrink-0" style={{ width: '48px', height: '48px', minWidth: '48px', minHeight: '48px' }}>
+          <img src={member.foto} alt={member.nome} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         <div>
           <h4 className="text-white font-medium">{member.nome}</h4>

@@ -52,7 +52,8 @@ const Profile = () => {
           <img 
             src={member.foto} 
             alt={member.nome} 
-            className="w-28 h-28 rounded-full border-2 border-accent-gold p-1 bg-bg-secondary object-cover" 
+            className="rounded-full border-2 border-accent-gold p-1 bg-bg-secondary" 
+            style={{ width: '112px', height: '112px', minWidth: '112px', minHeight: '112px', objectFit: 'cover' }}
           />
           <div className="flex-1">
             <div className="flex items-center gap-3 flex-wrap">

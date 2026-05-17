@@ -334,10 +334,11 @@ const MemberForm = ({ member, onClose }) => {
                   />
                   <div 
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-40 h-48 rounded-xl bg-[#131316] border-2 border-dashed border-[rgba(212,175,55,0.2)] flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:border-[#D4AF37] transition-colors"
+                    className="rounded-xl bg-[#131316] border-2 border-dashed border-[rgba(212,175,55,0.2)] flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:border-[#D4AF37] transition-colors"
+                    style={{ width: '160px', height: '192px', minWidth: '160px', minHeight: '192px' }}
                   >
                     {formData.foto ? (
-                      <img src={formData.foto} alt="Foto" className="w-full h-full object-cover" />
+                      <img src={formData.foto} alt="Foto" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                       <span className="text-[#99907C] text-sm uppercase font-bold tracking-wider">FOTO</span>
                     )}

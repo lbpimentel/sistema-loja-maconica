@@ -357,7 +357,7 @@ const Chancellery = () => {
                     <tr key={member.id} className="border-b border-glass-border/30 hover:bg-white/5 transition-colors">
                       <td className="py-4 px-6 font-mono text-text-secondary">{member.cim || 'N/C'}</td>
                       <td className="py-4 px-6 font-medium text-white flex items-center gap-3">
-                        <img src={member.foto} alt="" className="w-8 h-8 rounded-full border border-glass-border" />
+                        <img src={member.foto} alt="" className="rounded-full border border-glass-border" style={{ width: '32px', height: '32px', minWidth: '32px', minHeight: '32px', objectFit: 'cover' }} />
                         {member.nome}
                       </td>
                       <td className="py-4 px-6 text-accent-gold font-medium">{member.grau}</td>
