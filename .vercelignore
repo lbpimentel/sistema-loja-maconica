@@ -9,3 +9,5 @@ dev.db
 dev.db-journal
 prisma/dev.db
 prisma/dev.db-journal
+api/index.cjs
+

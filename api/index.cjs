@@ -572,7 +572,102 @@ app.put('/api/tenant', async (req, res) => {
     res.json(updatedTenant);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Erro ao atualizar dados da Loja' });
+    res.status(500).json({ error: 'Erro ao atualizar informações da Loja' });
+  }
+});
+
+// ==========================================
+// ROTAS: USUÁRIOS E CONTROLE DE ACESSO
+// ==========================================
+
+// 1. Listar usuários da Loja (Tenant)
+app.get('/api/users', async (req, res) => {
+  try {
+    const users = await prisma.user.findMany({
+      where: { tenantId: req.tenantId },
+      orderBy: { id: 'desc' }
+    });
+    // Omitir o hash da senha por segurança no envio para o client
+    const safeUsers = users.map(({ passwordHash, ...u }) => u);
+    res.json(safeUsers);
+  } catch (error) {
+    console.error('ERROR GET /api/users:', error);
+    res.status(500).json({ error: 'Erro ao buscar usuários', message: error.message });
+  }
+});
+
+// 2. Criar novo usuário associado ao Tenant
+app.post('/api/users', async (req, res) => {
+  try {
+    const { email, password, role } = req.body;
+    
+    // Hash simplificado para demonstração/desenvolvimento
+    const passwordHash = password ? `hash:${password}` : 'hash:123456';
+    
+    const newUser = await prisma.user.create({
+      data: {
+        email,
+        passwordHash,
+        role: role || 'MEMBRO',
+        tenantId: req.tenantId
+      }
+    });
+    
+    const { passwordHash: _, ...safeUser } = newUser;
+    res.status(201).json(safeUser);
+  } catch (error) {
+    console.error('ERROR POST /api/users:', error);
+    res.status(500).json({ error: 'Erro ao criar usuário', message: error.message });
+  }
+});
+
+// 3. Atualizar dados do usuário
+app.put('/api/users/:id', async (req, res) => {
+  const { id } = req.params;
+  const { email, role, password } = req.body;
+  try {
+    const updateData = {};
+    if (email !== undefined) updateData.email = email;
+    if (role !== undefined) updateData.role = role;
+    if (password) updateData.passwordHash = `hash:${password}`;
+
+    // Atualizar apenas no escopo do tenant atual
+    const updatedUser = await prisma.user.update({
+      where: { 
+        id: Number(id),
+        tenantId: req.tenantId
+      },
+      data: updateData
+    });
+    
+    const { passwordHash: _, ...safeUser } = updatedUser;
+    res.json(safeUser);
+  } catch (error) {
+    console.error('ERROR PUT /api/users:', error);
+    res.status(500).json({ error: 'Erro ao atualizar usuário', message: error.message });
+  }
+});
+
+// 4. Excluir usuário
+app.delete('/api/users/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Excluir garantindo que pertence ao tenant atual
+    const user = await prisma.user.findFirst({
+      where: { id: Number(id), tenantId: req.tenantId }
+    });
+    
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado para esta Loja' });
+    }
+
+    await prisma.user.delete({
+      where: { id: Number(id) }
+    });
+    res.status(204).send();
+  } catch (error) {
+    console.error('ERROR DELETE /api/users:', error);
+    res.status(500).json({ error: 'Erro ao excluir usuário', message: error.message });
   }
 });
 

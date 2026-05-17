@@ -127,7 +127,7 @@ const Sidebar = ({ activePage, setActivePage, isOpen, onClose }) => {
       <div className="p-4 border-t border-glass-border flex flex-col gap-2">
         <div className="text-[10px] text-[#99907C] font-semibold tracking-wider text-center mt-1 border-t border-glass-border/10 pt-2">
           Desenvolvido por:<br />
-          <a href="mailto:leandrobessa@hotmail.com" className="text-[#D4AF37] hover:underline font-bold transition-all block mt-1">Leandro Bessa</a>
+          <a href="mailto:leandrobessa@hotmail.com" className="text-[#D4AF37] hover:underline font-bold transition-all block mt-1">Leandro Pimenttel</a>
         </div>
       </div>
     </div>
