@@ -5,7 +5,7 @@ const TabButton = ({ id, label, icon: Icon, active, onClick }) => (
   <button
     type="button"
     onClick={() => onClick(id)}
-    className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-all cursor-pointer whitespace-nowrap
+    className={`flex items-center gap-2 px-4 py-2.5 border-b-2 -mb-px transition-all cursor-pointer whitespace-nowrap
       ${active ? 'border-[#D4AF37] text-[#D4AF37]' : 'border-transparent text-[#99907C] hover:text-white'}`}
   >
     <Icon className="w-4 h-4" strokeWidth={1.5} />
@@ -53,40 +53,100 @@ const MemberForm = ({ member, onClose }) => {
   const [activeTab, setActiveTab] = useState('personal');
   const [formData, setFormData] = useState({
     // Basics
-    codigo: '', cim: '', nome: '', nascimento: '', estadoCivil: '', naturalidade: '', grauInstrucao: '',
+    codigo: '', cim: '', ime: '', nome: '', nascimento: '', estadoCivil: '', nacionalidade: '', ufNascimento: '', naturalidade: '', naturalizacao: '', religiao: '', grauInstrucao: '',
     cpf: '', rg: '', orgaoExpedidorRg: '', tituloEleitoral: '', zonaEleitoral: '', secaoEleitoral: '', 
     cidadeEleitoral: '', ufEleitoral: '', carteiraEstrangeiro: '', orgaoExpedidorEstrangeiro: '',
-    sangue: '', rh: '', nomePai: '', nomeMae: '', foto: '',
+    sangue: '', rh: '', doadorOrgaos: false, reservista: '', nomePai: '', nomeMae: '', foto: '', idiomas: '', qrCode: '',
     // Residence
     endereco: '', numeroRes: '', complementoRes: '', bairro: '', cidade: '', estado: '', cep: '', 
-    telefoneResidencial: '', celular: '', email: '', skype: '', receberEmailsLoja: false,
+    telefoneResidencial: '', celular: '', email: '', instagram: '', facebook: '', linkedin: '', correspondencia: '', caixaPostal: '', receberEmailsLoja: false,
     // Work
     empresa: '', enderecoTrabalho: '', numeroTrab: '', bairroTrabalho: '', cidadeTrabalho: '', estadoTrabalho: '', 
     telefoneComercial: '', profissao: '', cepTrabalho: '', cargoTrabalho: '', funcaoTrabalho: '',
     // Family
     conjugeNome: '', conjugeNascimento: '', dataCasamento: '', conjugeProfissao: '', conjugeCargo: '', 
-    conjugeFuncao: '', conjugeEmpresa: '', conjugeTelefone: '',
-    filhos: [],
+    conjugeFuncao: '', conjugeEmpresa: '', conjugeTelefone: '', sangueConjuge: '', rhConjuge: '', doadorConjuge: false,
+    filhos: [], lowtons: [], apjs: [],
     // Masonic
-    grau: 'Mestre Maçom', cargoLoja: '', cargoPotencia: '', direitoVoto: false, peculio: '', lojaAnterior: '',
-    iniciacaoData: '', iniciacaoPlacet: '', iniciacaoLoja: '', iniciacaoOriente: '',
-    elevacaoData: '', elevacaoPlacet: '', elevacaoLoja: '', elevacaoOriente: '',
-    exaltacaoData: '', exaltacaoPlacet: '', exaltacaoLoja: '', exaltacaoOriente: '',
+    grau: 'Mestre Maçom', rito: '', potencia: '', cargoLoja: '', cargoPotencia: '', direitoVoto: false, peculio: '', lojaAnterior: '',
+    iniciacaoData: '', iniciacaoPlacet: '', iniciacaoLoja: '', iniciacaoOriente: '', iniciacaoUf: '', iniciacaoPotencia: '',
+    elevacaoData: '', elevacaoPlacet: '', elevacaoLoja: '', elevacaoOriente: '', elevacaoUf: '', elevacaoPotencia: '',
+    exaltacaoData: '', exaltacaoPlacet: '', exaltacaoLoja: '', exaltacaoOriente: '', exaltacaoUf: '', exaltacaoPotencia: '',
     regularizacaoData: '', regularizacaoPlacet: '', filiacaoData: '', filiacaoPlacet: '',
-    instalacaoData: '', instalacaoPlacet: '', instalacaoLoja: '', instalacaoOriente: '',
+    instalacaoData: '', instalacaoPlacet: '', instalacaoLoja: '', instalacaoOriente: '', instalacaoUf: '', instalacaoPotencia: '',
     dataDireitoVoto: '',
     // Titles
-    tituloEmerito: '', tituloRemido: '', tituloBenemerito: '', tituloGrandeBenemerito: '',
-    tituloEstrelaDistincao: '', tituloCruzPerfeicao: '', tituloComendaPedro: '', tituloGrandeMerito: '',
+    tituloEmerito: '', atoEmerito: '', tituloRemido: '', atoRemido: '', tituloBenemerito: '', atoBenemerito: '', tituloGrandeBenemerito: '', atoGrandeBenemerito: '',
+    tituloEstrelaDistincao: '', atoEstrelaDistincao: '', tituloCruzPerfeicao: '', atoCruzPerfeicao: '', tituloComendaPedro: '', atoComendaPedro: '', tituloGrandeMerito: '', atoGrandeMerito: '',
     // History
-    status: 'Ativo', loja: 'Arls Major Manoel dos Santos Portugal',
+    status: 'Ativo', loja: 'Arls Major Manoel dos Santos Portugal', categoria: '',
     cargosExercidos: [],
-    numeroSessoes: 0, faltas: 0, presencas: 0, frequencia: 0, observacoes: '',
+    numeroSessoes: 0, faltas: 0, presencas: 0, abstencoes: 0, frequencia: 0, frequenciaVoto: 0, 
+    irregular: false, dataIrregularidade: '', licenca: false, dataLicencaDe: '', dataLicencaAte: '',
+    observacoes: '',
     ...member
   });
 
+  const [ritoOptions, setRitoOptions] = useState(['Adonhiramita', 'Brasileiro', 'Escocês Antigo e Aceito', 'Moderno', 'Schröder', 'York']);
+  const [potenciaOptions, setPotenciaOptions] = useState(['GOB', 'GLESP', 'GOP', 'COMAB', 'GLMEM']);
+  const [cargoLojaOptions, setCargoLojaOptions] = useState([
+    'Venerável Mestre', '1º Vigilante', '2º Vigilante', 'Orador', 
+    'Secretário', 'Tesoureiro', 'Chanceler', 'Mestre de Cerimônias', 
+    'Hospitaleiro', '1º Diácono', '2º Diácono', 'Guarda do Templo', 
+    'Cobridor', 'Porta Bandeira', 'Porta Estandarte', 'Porta Espada',
+    'Mestre de Banquetes', 'Mestre de Harmonia', 'Experto', 'Bibliotecário', 
+    'Arquiteto'
+  ]);
+  const [cargoPotenciaOptions, setCargoPotenciaOptions] = useState([
+    'Grão-Mestre Geral', 'Grão-Mestre Adjunto', 'Grão-Mestre Estadual', 
+    'Grão-Mestre Estadual Adjunto', 'Grande Secretário', 'Grande Tesoureiro', 
+    'Grande Chanceler', 'Grande Orador', 'Grande Hospitaleiro', 
+    'Assessor do Grão-Mestre', 'Membro do Tribunal', 'Deputado Federal', 
+    'Deputado Estadual'
+  ]);
+
   useEffect(() => {
     document.body.style.overflow = 'hidden';
+    
+    const fetchExistingOptions = async () => {
+      try {
+        const response = await fetch('/api/members');
+        if (response.ok) {
+          const members = await response.json();
+          
+          const getUniqueValues = (field, defaultList) => {
+            const dbValues = members
+              .map(m => m[field])
+              .filter(val => val && typeof val === 'string' && val.trim() !== '');
+            const combined = [...new Set([...defaultList, ...dbValues])];
+            return combined.sort((a, b) => a.localeCompare(b));
+          };
+
+          setRitoOptions(getUniqueValues('rito', ['Adonhiramita', 'Brasileiro', 'Escocês Antigo e Aceito', 'Moderno', 'Schröder', 'York']));
+          setPotenciaOptions(getUniqueValues('potencia', ['GOB', 'GLESP', 'GOP', 'COMAB', 'GLMEM']));
+          setCargoLojaOptions(getUniqueValues('cargoLoja', [
+            'Venerável Mestre', '1º Vigilante', '2º Vigilante', 'Orador', 
+            'Secretário', 'Tesoureiro', 'Chanceler', 'Mestre de Cerimônias', 
+            'Hospitaleiro', '1º Diácono', '2º Diácono', 'Guarda do Templo', 
+            'Cobridor', 'Porta Bandeira', 'Porta Estandarte', 'Porta Espada',
+            'Mestre de Banquetes', 'Mestre de Harmonia', 'Experto', 'Bibliotecário', 
+            'Arquiteto'
+          ]));
+          setCargoPotenciaOptions(getUniqueValues('cargoPotencia', [
+            'Grão-Mestre Geral', 'Grão-Mestre Adjunto', 'Grão-Mestre Estadual', 
+            'Grão-Mestre Estadual Adjunto', 'Grande Secretário', 'Grande Tesoureiro', 
+            'Grande Chanceler', 'Grande Orador', 'Grande Hospitaleiro', 
+            'Assessor do Grão-Mestre', 'Membro do Tribunal', 'Deputado Federal', 
+            'Deputado Estadual'
+          ]));
+        }
+      } catch (err) {
+        console.error('Erro ao buscar cargos e potências existentes:', err);
+      }
+    };
+
+    fetchExistingOptions();
+
     return () => { document.body.style.overflow = 'auto'; };
   }, []);
 
@@ -105,7 +165,7 @@ const MemberForm = ({ member, onClose }) => {
 
   const handleSave = async () => {
     try {
-      const url = member ? `http://localhost:3001/api/members/${member.id}` : 'http://localhost:3001/api/members';
+      const url = member ? `/api/members/${member.id}` : '/api/members';
       const method = member ? 'PUT' : 'POST';
       
       const response = await fetch(url, {
@@ -126,9 +186,47 @@ const MemberForm = ({ member, onClose }) => {
     }
   };
 
+  const fetchAddressByCep = async (cep, type) => {
+    const cleanCep = cep.replace(/\D/g, '');
+    if (cleanCep.length === 8) {
+      try {
+        const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+        const data = await response.json();
+        
+        if (!data.erro) {
+          if (type === 'residencia') {
+            setFormData(prev => ({
+              ...prev,
+              endereco: data.logradouro || prev.endereco,
+              bairro: data.bairro || prev.bairro,
+              cidade: data.localidade || prev.cidade,
+              estado: data.uf || prev.estado
+            }));
+          } else if (type === 'trabalho') {
+            setFormData(prev => ({
+              ...prev,
+              enderecoTrabalho: data.logradouro || prev.enderecoTrabalho,
+              bairroTrabalho: data.bairro || prev.bairroTrabalho,
+              cidadeTrabalho: data.localidade || prev.cidadeTrabalho,
+              estadoTrabalho: data.uf || prev.estadoTrabalho
+            }));
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao buscar CEP:', error);
+      }
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
+
+    if (name === 'cep' && value.replace(/\D/g, '').length === 8) {
+      fetchAddressByCep(value, 'residencia');
+    } else if (name === 'cepTrabalho' && value.replace(/\D/g, '').length === 8) {
+      fetchAddressByCep(value, 'trabalho');
+    }
   };
 
   const handleFilhoChange = (index, field, value) => {
@@ -144,6 +242,36 @@ const MemberForm = ({ member, onClose }) => {
   const removeFilho = (index) => {
     const newFilhos = formData.filhos.filter((_, i) => i !== index);
     setFormData({ ...formData, filhos: newFilhos });
+  };
+
+  const handleLowtonChange = (index, field, value) => {
+    const newLowtons = [...formData.lowtons];
+    newLowtons[index][field] = value;
+    setFormData({ ...formData, lowtons: newLowtons });
+  };
+
+  const addLowton = () => {
+    setFormData({ ...formData, lowtons: [...formData.lowtons, { id: Date.now(), nome: '', dataNascimento: '' }] });
+  };
+
+  const removeLowton = (index) => {
+    const newLowtons = formData.lowtons.filter((_, i) => i !== index);
+    setFormData({ ...formData, lowtons: newLowtons });
+  };
+
+  const handleApjChange = (index, field, value) => {
+    const newApjs = [...formData.apjs];
+    newApjs[index][field] = value;
+    setFormData({ ...formData, apjs: newApjs });
+  };
+
+  const addApj = () => {
+    setFormData({ ...formData, apjs: [...formData.apjs, { id: Date.now(), nome: '', dataNascimento: '' }] });
+  };
+
+  const removeApj = (index) => {
+    const newApjs = formData.apjs.filter((_, i) => i !== index);
+    setFormData({ ...formData, apjs: newApjs });
   };
 
   const handleCargoChange = (index, field, value) => {
@@ -165,7 +293,7 @@ const MemberForm = ({ member, onClose }) => {
     <div className="fixed inset-0 bg-black-90 backdrop-blur-md z-modal flex items-center justify-center p-4">
       <div className="glass-card w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col p-0" style={{ padding: 0 }}>
         {/* Header */}
-        <div className="p-6 border-b border-[rgba(212,175,55,0.15)] flex justify-between items-center bg-[#131316]">
+        <div className="flex-shrink-0 p-6 border-b border-[rgba(212,175,55,0.15)] flex justify-between items-center bg-[#131316]">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-full bg-[#D4AF37]/10 flex items-center justify-center border border-[#D4AF37]/30">
               <User className="text-[#D4AF37] w-6 h-6" strokeWidth={1.5} />
@@ -174,7 +302,7 @@ const MemberForm = ({ member, onClose }) => {
               <h2 className="text-2xl text-[#D4AF37]">
                 {member ? 'Editar Irmão' : 'Cadastro de Irmãos - Ordem: Nome'}
               </h2>
-              <p className="text-[10px] text-[#99907C] uppercase tracking-widest">Padrão Arte Real Web</p>
+              <p className="text-[10px] text-[#99907C] uppercase tracking-widest">SisOriente - Sistema para Gestão de Loja Maçônica</p>
             </div>
           </div>
           <button onClick={onClose} className="action-icon-button">
@@ -183,7 +311,7 @@ const MemberForm = ({ member, onClose }) => {
         </div>
 
         {/* Tabs */}
-        <div className="flex px-6 bg-[#131316]/50 border-b border-[rgba(212,175,55,0.15)] overflow-x-auto hide-scrollbar">
+        <div className="flex-shrink-0 flex pt-4 pb-0.5 items-end px-6 bg-[#131316]/50 border-b border-[rgba(212,175,55,0.15)] overflow-x-auto hide-scrollbar">
           <TabButton id="personal" label="Identificação" icon={User} active={activeTab === 'personal'} onClick={setActiveTab} />
           <TabButton id="contact" label="Residência / Trabalho" icon={Home} active={activeTab === 'contact'} onClick={setActiveTab} />
           <TabButton id="family" label="Cônjuge / Filhos" icon={Heart} active={activeTab === 'family'} onClick={setActiveTab} />
@@ -222,11 +350,17 @@ const MemberForm = ({ member, onClose }) => {
                   <div className="grid grid-cols-12 gap-x-4">
                     <FormField label="Código" name="codigo" value={formData.codigo} onChange={handleChange} width="col-span-2" />
                     <FormField label="Cadastro (CIM)" name="cim" value={formData.cim} onChange={handleChange} width="col-span-3" />
-                    <FormField label="Nome" name="nome" value={formData.nome} onChange={handleChange} width="col-span-7" />
+                    <FormField label="IME" name="ime" value={formData.ime} onChange={handleChange} width="col-span-2" />
+                    <FormField label="Nome" name="nome" value={formData.nome} onChange={handleChange} width="col-span-5" />
                     
                     <FormField label="Nascimento" name="nascimento" value={formData.nascimento} onChange={handleChange} type="date" width="col-span-3" />
                     <FormField label="Est. Civil" name="estadoCivil" value={formData.estadoCivil} onChange={handleChange} width="col-span-3" />
-                    <FormField label="Natural de" name="naturalidade" value={formData.naturalidade} onChange={handleChange} width="col-span-6" />
+                    <FormField label="Natural de" name="naturalidade" value={formData.naturalidade} onChange={handleChange} width="col-span-4" />
+                    <FormField label="UF Nasc." name="ufNascimento" value={formData.ufNascimento} onChange={handleChange} width="col-span-2" />
+                    
+                    <FormField label="Nacionalidade" name="nacionalidade" value={formData.nacionalidade} onChange={handleChange} width="col-span-4" />
+                    <FormField label="Naturalização" name="naturalizacao" value={formData.naturalizacao} onChange={handleChange} width="col-span-4" />
+                    <FormField label="Religião" name="religiao" value={formData.religiao} onChange={handleChange} width="col-span-4" />
                     
                     <FormField label="Nome do Pai" name="nomePai" value={formData.nomePai} onChange={handleChange} width="col-span-6" />
                     <FormField label="Nome da Mãe" name="nomeMae" value={formData.nomeMae} onChange={handleChange} width="col-span-6" />
@@ -248,13 +382,20 @@ const MemberForm = ({ member, onClose }) => {
                 
                 <FormField label="Cart. Estrangeiro" name="carteiraEstrangeiro" value={formData.carteiraEstrangeiro} onChange={handleChange} width="col-span-4" />
                 <FormField label="Órgão Exp." name="orgaoExpedidorEstrangeiro" value={formData.orgaoExpedidorEstrangeiro} onChange={handleChange} width="col-span-2" />
+                <FormField label="Reservista" name="reservista" value={formData.reservista} onChange={handleChange} width="col-span-6" />
+                
                 <FormField label="Grau de Instrução" name="grauInstrucao" value={formData.grauInstrucao} onChange={handleChange} width="col-span-6" />
+                <FormField label="Idiomas (Ex: Inglês, Francês)" name="idiomas" value={formData.idiomas} onChange={handleChange} width="col-span-6" />
               </div>
 
-              <SectionTitle title="Informações Médicas" />
+              <SectionTitle title="Informações Médicas e Adicionais" />
               <div className="grid grid-cols-12 gap-x-4">
                 <FormField label="Sangue" name="sangue" value={formData.sangue} onChange={handleChange} width="col-span-2" />
                 <FormField label="RH" name="rh" value={formData.rh} onChange={handleChange} width="col-span-2" />
+                <div className="col-span-4 flex items-center">
+                  <CheckboxField label="Doador de Órgãos" name="doadorOrgaos" checked={formData.doadorOrgaos} onChange={handleChange} />
+                </div>
+                <FormField label="QR Code (URL/Identificador)" name="qrCode" value={formData.qrCode} onChange={handleChange} width="col-span-4" />
               </div>
             </div>
           )}
@@ -275,8 +416,14 @@ const MemberForm = ({ member, onClose }) => {
                 <FormField label="Fone" name="telefoneResidencial" value={formData.telefoneResidencial} onChange={handleChange} width="col-span-6" />
                 <FormField label="Celular" name="celular" value={formData.celular} onChange={handleChange} width="col-span-6" />
                 
-                <FormField label="E-mail" name="email" value={formData.email} onChange={handleChange} width="col-span-6" />
-                <FormField label="Skype" name="skype" value={formData.skype} onChange={handleChange} width="col-span-6" />
+                <FormField label="E-mail" name="email" value={formData.email} onChange={handleChange} width="col-span-12" />
+                
+                <FormField label="Instagram" name="instagram" value={formData.instagram} onChange={handleChange} width="col-span-4" />
+                <FormField label="Facebook" name="facebook" value={formData.facebook} onChange={handleChange} width="col-span-4" />
+                <FormField label="LinkedIn" name="linkedin" value={formData.linkedin} onChange={handleChange} width="col-span-4" />
+                
+                <FormField label="Caixa Postal" name="caixaPostal" value={formData.caixaPostal} onChange={handleChange} width="col-span-2" />
+                <FormField label="Endereço de Correspondência (Se diferente)" name="correspondencia" value={formData.correspondencia} onChange={handleChange} width="col-span-10" />
                 
                 <div className="col-span-12">
                   <CheckboxField label="Receber somente os E-Mails relativos a Loja" name="receberEmailsLoja" checked={formData.receberEmailsLoja} onChange={handleChange} />
@@ -318,6 +465,12 @@ const MemberForm = ({ member, onClose }) => {
                 <FormField label="Função" name="conjugeFuncao" value={formData.conjugeFuncao} onChange={handleChange} width="col-span-6" />
                 <FormField label="Empresa" name="conjugeEmpresa" value={formData.conjugeEmpresa} onChange={handleChange} width="col-span-6" />
                 <FormField label="Fone" name="conjugeTelefone" value={formData.conjugeTelefone} onChange={handleChange} width="col-span-6" />
+                
+                <FormField label="Sangue" name="sangueConjuge" value={formData.sangueConjuge} onChange={handleChange} width="col-span-2" />
+                <FormField label="RH" name="rhConjuge" value={formData.rhConjuge} onChange={handleChange} width="col-span-2" />
+                <div className="col-span-4 flex items-center mt-2">
+                  <CheckboxField label="Doador de Órgãos" name="doadorConjuge" checked={formData.doadorConjuge} onChange={handleChange} />
+                </div>
               </div>
 
               <div className="flex justify-between items-end mb-2 mt-4">
@@ -355,30 +508,162 @@ const MemberForm = ({ member, onClose }) => {
                   ))}
                 </div>
               )}
+
+              <div className="flex justify-between items-end mb-2 mt-4">
+                <SectionTitle title="Lowtons (Filhos Registrados)" />
+                <button type="button" onClick={addLowton} className="flex items-center gap-1 text-[#D4AF37] hover:text-white text-xs font-bold uppercase transition-colors mb-4">
+                  <Plus className="w-4 h-4" strokeWidth={1.5} /> Adicionar Lowton
+                </button>
+              </div>
+              
+              {formData.lowtons.length === 0 ? (
+                <div className="text-center p-6 bg-white/5 rounded-xl border border-white/5 text-[#99907C] text-sm">
+                  Nenhum Lowton cadastrado.
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <div className="grid grid-cols-12 gap-x-4 px-4 pb-2 border-b border-[rgba(212,175,55,0.2)]">
+                    <div className="col-span-8 text-[10px] text-[#99907C] uppercase font-bold">Lowton: (Nome)</div>
+                    <div className="col-span-3 text-[10px] text-[#99907C] uppercase font-bold">Data Nasc.:</div>
+                    <div className="col-span-1"></div>
+                  </div>
+                  {formData.lowtons.map((filho, index) => (
+                    <div key={filho.id} className="grid grid-cols-12 gap-x-4 items-center">
+                      <div className="col-span-8">
+                        <input type="text" className="modern-input" value={filho.nome} onChange={(e) => handleLowtonChange(index, 'nome', e.target.value)} />
+                      </div>
+                      <div className="col-span-3">
+                        <input type="date" className="modern-input" value={filho.dataNascimento} onChange={(e) => handleLowtonChange(index, 'dataNascimento', e.target.value)} />
+                      </div>
+                      <div className="col-span-1 flex justify-end">
+                        <button type="button" onClick={() => removeLowton(index)} className="p-2 text-red-400 hover:text-red-300 transition-colors">
+                          <Trash2 className="w-4 h-4" strokeWidth={1.5} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex justify-between items-end mb-2 mt-4">
+                <SectionTitle title="APJ (Ação Paramaçônica Juvenil)" />
+                <button type="button" onClick={addApj} className="flex items-center gap-1 text-[#D4AF37] hover:text-white text-xs font-bold uppercase transition-colors mb-4">
+                  <Plus className="w-4 h-4" strokeWidth={1.5} /> Adicionar APJ
+                </button>
+              </div>
+              
+              {formData.apjs.length === 0 ? (
+                <div className="text-center p-6 bg-white/5 rounded-xl border border-white/5 text-[#99907C] text-sm">
+                  Nenhum sobrinho(a) APJ cadastrado.
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <div className="grid grid-cols-12 gap-x-4 px-4 pb-2 border-b border-[rgba(212,175,55,0.2)]">
+                    <div className="col-span-8 text-[10px] text-[#99907C] uppercase font-bold">APJ: (Nome)</div>
+                    <div className="col-span-3 text-[10px] text-[#99907C] uppercase font-bold">Data Nasc.:</div>
+                    <div className="col-span-1"></div>
+                  </div>
+                  {formData.apjs.map((filho, index) => (
+                    <div key={filho.id} className="grid grid-cols-12 gap-x-4 items-center">
+                      <div className="col-span-8">
+                        <input type="text" className="modern-input" value={filho.nome} onChange={(e) => handleApjChange(index, 'nome', e.target.value)} />
+                      </div>
+                      <div className="col-span-3">
+                        <input type="date" className="modern-input" value={filho.dataNascimento} onChange={(e) => handleApjChange(index, 'dataNascimento', e.target.value)} />
+                      </div>
+                      <div className="col-span-1 flex justify-end">
+                        <button type="button" onClick={() => removeApj(index)} className="p-2 text-red-400 hover:text-red-300 transition-colors">
+                          <Trash2 className="w-4 h-4" strokeWidth={1.5} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
           {activeTab === 'masonic' && (
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-6 animate-fadeIn">
+              <SectionTitle title="Dados Maçônicos Básicos" />
+              <div className="grid grid-cols-12 gap-x-4 items-center">
+                <div className="col-span-4 flex flex-col gap-1 mb-4">
+                  <label className="text-[10px] text-[#99907C] uppercase tracking-wider font-bold">Rito</label>
+                  <select name="rito" value={formData.rito} onChange={handleChange} className="modern-input" style={{ paddingLeft: '12px' }}>
+                    <option value="">[Sem Rito / Nenhum]</option>
+                    {ritoOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-span-4 flex flex-col gap-1 mb-4">
+                  <label className="text-[10px] text-[#99907C] uppercase tracking-wider font-bold">Potência</label>
+                  <select name="potencia" value={formData.potencia} onChange={handleChange} className="modern-input" style={{ paddingLeft: '12px' }}>
+                    <option value="">[Sem Potência / Nenhuma]</option>
+                    {potenciaOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-span-4 flex flex-col gap-1 mb-4">
+                  <label className="text-[10px] text-[#99907C] uppercase tracking-wider font-bold">Grau Atual</label>
+                  <select name="grau" value={formData.grau} onChange={handleChange} className="modern-input animate-fadeIn" style={{ paddingLeft: '12px' }}>
+                    <option value="Aprendiz">Aprendiz</option>
+                    <option value="Companheiro">Companheiro</option>
+                    <option value="Mestre Maçom">Mestre Maçom</option>
+                  </select>
+                </div>
+              </div>
+
               <SectionTitle title="Graus e Iniciações" />
               <div className="grid grid-cols-12 gap-x-4 items-center">
                 <div className="col-span-12 md:col-span-2 text-[#D4AF37] text-sm font-bold">Grau 1 em (Iniciação):</div>
                 <FormField name="iniciacaoData" value={formData.iniciacaoData} onChange={handleChange} type="date" width="col-span-6 md:col-span-2" />
                 <FormField label="Placet nº:" name="iniciacaoPlacet" value={formData.iniciacaoPlacet} onChange={handleChange} width="col-span-6 md:col-span-2" />
-                <FormField label="Loja:" name="iniciacaoLoja" value={formData.iniciacaoLoja} onChange={handleChange} width="col-span-6 md:col-span-3" />
-                <FormField label="Oriente:" name="iniciacaoOriente" value={formData.iniciacaoOriente} onChange={handleChange} width="col-span-6 md:col-span-3" />
+                <FormField label="Loja:" name="iniciacaoLoja" value={formData.iniciacaoLoja} onChange={handleChange} width="col-span-6 md:col-span-2" />
+                <FormField label="Oriente:" name="iniciacaoOriente" value={formData.iniciacaoOriente} onChange={handleChange} width="col-span-6 md:col-span-2" />
+                <FormField label="UF:" name="iniciacaoUf" value={formData.iniciacaoUf} onChange={handleChange} width="col-span-6 md:col-span-1" />
+                <div className="col-span-6 md:col-span-1 flex flex-col gap-1 mb-4">
+                  <label className="text-[10px] text-[#99907C] uppercase tracking-wider font-bold">Potência:</label>
+                  <select name="iniciacaoPotencia" value={formData.iniciacaoPotencia} onChange={handleChange} className="modern-input" style={{ paddingLeft: '12px' }}>
+                    <option value="">[Nenhuma]</option>
+                    {potenciaOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
 
                 <div className="col-span-12 md:col-span-2 text-[#D4AF37] text-sm font-bold">Grau 2 em (Elevação):</div>
                 <FormField name="elevacaoData" value={formData.elevacaoData} onChange={handleChange} type="date" width="col-span-6 md:col-span-2" />
                 <FormField label="Placet nº:" name="elevacaoPlacet" value={formData.elevacaoPlacet} onChange={handleChange} width="col-span-6 md:col-span-2" />
-                <FormField label="Loja:" name="elevacaoLoja" value={formData.elevacaoLoja} onChange={handleChange} width="col-span-6 md:col-span-3" />
-                <FormField label="Oriente:" name="elevacaoOriente" value={formData.elevacaoOriente} onChange={handleChange} width="col-span-6 md:col-span-3" />
+                <FormField label="Loja:" name="elevacaoLoja" value={formData.elevacaoLoja} onChange={handleChange} width="col-span-6 md:col-span-2" />
+                <FormField label="Oriente:" name="elevacaoOriente" value={formData.elevacaoOriente} onChange={handleChange} width="col-span-6 md:col-span-2" />
+                <FormField label="UF:" name="elevacaoUf" value={formData.elevacaoUf} onChange={handleChange} width="col-span-6 md:col-span-1" />
+                <div className="col-span-6 md:col-span-1 flex flex-col gap-1 mb-4">
+                  <label className="text-[10px] text-[#99907C] uppercase tracking-wider font-bold">Potência:</label>
+                  <select name="elevacaoPotencia" value={formData.elevacaoPotencia} onChange={handleChange} className="modern-input" style={{ paddingLeft: '12px' }}>
+                    <option value="">[Nenhuma]</option>
+                    {potenciaOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
 
                 <div className="col-span-12 md:col-span-2 text-[#D4AF37] text-sm font-bold">Grau 3 em (Exaltação):</div>
                 <FormField name="exaltacaoData" value={formData.exaltacaoData} onChange={handleChange} type="date" width="col-span-6 md:col-span-2" />
                 <FormField label="Placet nº:" name="exaltacaoPlacet" value={formData.exaltacaoPlacet} onChange={handleChange} width="col-span-6 md:col-span-2" />
-                <FormField label="Loja:" name="exaltacaoLoja" value={formData.exaltacaoLoja} onChange={handleChange} width="col-span-6 md:col-span-3" />
-                <FormField label="Oriente:" name="exaltacaoOriente" value={formData.exaltacaoOriente} onChange={handleChange} width="col-span-6 md:col-span-3" />
+                <FormField label="Loja:" name="exaltacaoLoja" value={formData.exaltacaoLoja} onChange={handleChange} width="col-span-6 md:col-span-2" />
+                <FormField label="Oriente:" name="exaltacaoOriente" value={formData.exaltacaoOriente} onChange={handleChange} width="col-span-6 md:col-span-2" />
+                <FormField label="UF:" name="exaltacaoUf" value={formData.exaltacaoUf} onChange={handleChange} width="col-span-6 md:col-span-1" />
+                <div className="col-span-6 md:col-span-1 flex flex-col gap-1 mb-4">
+                  <label className="text-[10px] text-[#99907C] uppercase tracking-wider font-bold">Potência:</label>
+                  <select name="exaltacaoPotencia" value={formData.exaltacaoPotencia} onChange={handleChange} className="modern-input" style={{ paddingLeft: '12px' }}>
+                    <option value="">[Nenhuma]</option>
+                    {potenciaOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <SectionTitle title="Outros Movimentos" />
@@ -399,24 +684,57 @@ const MemberForm = ({ member, onClose }) => {
                 <div className="col-span-12 md:col-span-2 text-white text-sm font-bold">Instalação em:</div>
                 <FormField name="instalacaoData" value={formData.instalacaoData} onChange={handleChange} type="date" width="col-span-6 md:col-span-2" />
                 <FormField label="Placet nº:" name="instalacaoPlacet" value={formData.instalacaoPlacet} onChange={handleChange} width="col-span-6 md:col-span-2" />
-                <FormField label="Loja:" name="instalacaoLoja" value={formData.instalacaoLoja} onChange={handleChange} width="col-span-6 md:col-span-3" />
-                <FormField label="Oriente:" name="instalacaoOriente" value={formData.instalacaoOriente} onChange={handleChange} width="col-span-6 md:col-span-3" />
+                <FormField label="Loja:" name="instalacaoLoja" value={formData.instalacaoLoja} onChange={handleChange} width="col-span-6 md:col-span-2" />
+                <FormField label="Oriente:" name="instalacaoOriente" value={formData.instalacaoOriente} onChange={handleChange} width="col-span-6 md:col-span-2" />
+                <FormField label="UF:" name="instalacaoUf" value={formData.instalacaoUf} onChange={handleChange} width="col-span-6 md:col-span-1" />
+                <div className="col-span-6 md:col-span-1 flex flex-col gap-1 mb-4">
+                  <label className="text-[10px] text-[#99907C] uppercase tracking-wider font-bold">Potência:</label>
+                  <select name="instalacaoPotencia" value={formData.instalacaoPotencia} onChange={handleChange} className="modern-input" style={{ paddingLeft: '12px' }}>
+                    <option value="">[Nenhuma]</option>
+                    {potenciaOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
-              <SectionTitle title="Títulos e Condecorações (Datas)" />
-              <div className="grid grid-cols-12 gap-x-4">
-                <FormField label="Emérito" name="tituloEmerito" value={formData.tituloEmerito} onChange={handleChange} type="date" width="col-span-3" />
-                <FormField label="Grande Benemérito" name="tituloGrandeBenemerito" value={formData.tituloGrandeBenemerito} onChange={handleChange} type="date" width="col-span-3" />
-                <FormField label="Comenda D. Pedro I" name="tituloComendaPedro" value={formData.tituloComendaPedro} onChange={handleChange} type="date" width="col-span-3" />
-                <div className="col-span-3"></div>
+              <SectionTitle title="Títulos e Condecorações (Datas e Atos)" />
+              <div className="grid grid-cols-12 gap-x-4 gap-y-2">
+                <div className="col-span-6 grid grid-cols-12 gap-x-2 border border-white/10 p-2 rounded bg-white/5">
+                  <FormField label="Emérito" name="tituloEmerito" value={formData.tituloEmerito} onChange={handleChange} type="date" width="col-span-6" />
+                  <FormField label="Ato/Decreto" name="atoEmerito" value={formData.atoEmerito} onChange={handleChange} width="col-span-6" />
+                </div>
+                <div className="col-span-6 grid grid-cols-12 gap-x-2 border border-white/10 p-2 rounded bg-white/5">
+                  <FormField label="Remido" name="tituloRemido" value={formData.tituloRemido} onChange={handleChange} type="date" width="col-span-6" />
+                  <FormField label="Ato/Decreto" name="atoRemido" value={formData.atoRemido} onChange={handleChange} width="col-span-6" />
+                </div>
                 
-                <FormField label="Remido" name="tituloRemido" value={formData.tituloRemido} onChange={handleChange} type="date" width="col-span-3" />
-                <FormField label="Estrela Distinção" name="tituloEstrelaDistincao" value={formData.tituloEstrelaDistincao} onChange={handleChange} type="date" width="col-span-3" />
-                <FormField label="Grande Mérito" name="tituloGrandeMerito" value={formData.tituloGrandeMerito} onChange={handleChange} type="date" width="col-span-3" />
-                <div className="col-span-3"></div>
+                <div className="col-span-6 grid grid-cols-12 gap-x-2 border border-white/10 p-2 rounded bg-white/5">
+                  <FormField label="Benemérito" name="tituloBenemerito" value={formData.tituloBenemerito} onChange={handleChange} type="date" width="col-span-6" />
+                  <FormField label="Ato/Decreto" name="atoBenemerito" value={formData.atoBenemerito} onChange={handleChange} width="col-span-6" />
+                </div>
+                <div className="col-span-6 grid grid-cols-12 gap-x-2 border border-white/10 p-2 rounded bg-white/5">
+                  <FormField label="Grande Benemérito" name="tituloGrandeBenemerito" value={formData.tituloGrandeBenemerito} onChange={handleChange} type="date" width="col-span-6" />
+                  <FormField label="Ato/Decreto" name="atoGrandeBenemerito" value={formData.atoGrandeBenemerito} onChange={handleChange} width="col-span-6" />
+                </div>
                 
-                <FormField label="Benemérito" name="tituloBenemerito" value={formData.tituloBenemerito} onChange={handleChange} type="date" width="col-span-3" />
-                <FormField label="Cruz Perfeição" name="tituloCruzPerfeicao" value={formData.tituloCruzPerfeicao} onChange={handleChange} type="date" width="col-span-3" />
+                <div className="col-span-6 grid grid-cols-12 gap-x-2 border border-white/10 p-2 rounded bg-white/5">
+                  <FormField label="Estrela Distinção" name="tituloEstrelaDistincao" value={formData.tituloEstrelaDistincao} onChange={handleChange} type="date" width="col-span-6" />
+                  <FormField label="Ato/Decreto" name="atoEstrelaDistincao" value={formData.atoEstrelaDistincao} onChange={handleChange} width="col-span-6" />
+                </div>
+                <div className="col-span-6 grid grid-cols-12 gap-x-2 border border-white/10 p-2 rounded bg-white/5">
+                  <FormField label="Cruz Perfeição" name="tituloCruzPerfeicao" value={formData.tituloCruzPerfeicao} onChange={handleChange} type="date" width="col-span-6" />
+                  <FormField label="Ato/Decreto" name="atoCruzPerfeicao" value={formData.atoCruzPerfeicao} onChange={handleChange} width="col-span-6" />
+                </div>
+
+                <div className="col-span-6 grid grid-cols-12 gap-x-2 border border-white/10 p-2 rounded bg-white/5">
+                  <FormField label="Comenda D. Pedro I" name="tituloComendaPedro" value={formData.tituloComendaPedro} onChange={handleChange} type="date" width="col-span-6" />
+                  <FormField label="Ato/Decreto" name="atoComendaPedro" value={formData.atoComendaPedro} onChange={handleChange} width="col-span-6" />
+                </div>
+                <div className="col-span-6 grid grid-cols-12 gap-x-2 border border-white/10 p-2 rounded bg-white/5">
+                  <FormField label="Grande Mérito" name="tituloGrandeMerito" value={formData.tituloGrandeMerito} onChange={handleChange} type="date" width="col-span-6" />
+                  <FormField label="Ato/Decreto" name="atoGrandeMerito" value={formData.atoGrandeMerito} onChange={handleChange} width="col-span-6" />
+                </div>
               </div>
             </div>
           )}
@@ -425,7 +743,7 @@ const MemberForm = ({ member, onClose }) => {
             <div className="flex flex-col gap-6">
               <SectionTitle title="Gestão e Status" />
               <div className="grid grid-cols-12 gap-x-4">
-                <div className="col-span-4 flex flex-col gap-1 mb-4">
+                <div className="col-span-3 flex flex-col gap-1 mb-4">
                   <label className="text-[10px] text-[#99907C] uppercase tracking-wider font-bold">Status Atual</label>
                   <select name="status" value={formData.status} onChange={handleChange} className="modern-input" style={{ paddingLeft: '12px' }}>
                     <option value="Ativo">Ativo</option>
@@ -434,10 +752,43 @@ const MemberForm = ({ member, onClose }) => {
                     <option value="Desligado">Desligado</option>
                   </select>
                 </div>
-                <FormField label="Cargo em Loja" name="cargoLoja" value={formData.cargoLoja} onChange={handleChange} width="col-span-4" />
-                <FormField label="Cargo Potência" name="cargoPotencia" value={formData.cargoPotencia} onChange={handleChange} width="col-span-4" />
-                <div className="col-span-12">
-                  <CheckboxField label="Direito a Voto Ativo" name="direitoVoto" checked={formData.direitoVoto} onChange={handleChange} />
+                <FormField label="Categoria" name="categoria" value={formData.categoria} onChange={handleChange} width="col-span-3" />
+                <div className="col-span-3 flex flex-col gap-1 mb-4">
+                  <label className="text-[10px] text-[#99907C] uppercase tracking-wider font-bold">Cargo em Loja</label>
+                  <select name="cargoLoja" value={formData.cargoLoja} onChange={handleChange} className="modern-input" style={{ paddingLeft: '12px' }}>
+                    <option value="">[Sem Cargo / Nenhum]</option>
+                    {cargoLojaOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-span-3 flex flex-col gap-1 mb-4">
+                  <label className="text-[10px] text-[#99907C] uppercase tracking-wider font-bold">Cargo Potência</label>
+                  <select name="cargoPotencia" value={formData.cargoPotencia} onChange={handleChange} className="modern-input" style={{ paddingLeft: '12px' }}>
+                    <option value="">[Sem Cargo / Nenhum]</option>
+                    {cargoPotenciaOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div className="col-span-12 flex gap-4 mt-2 mb-2 p-2 bg-white/5 border border-white/10 rounded">
+                  <CheckboxField label="Direito a Voto" name="direitoVoto" checked={formData.direitoVoto} onChange={handleChange} />
+                  <div className="w-px bg-white/10 h-6"></div>
+                  <CheckboxField label="Irregular" name="irregular" checked={formData.irregular} onChange={handleChange} />
+                  {formData.irregular && (
+                    <input type="date" name="dataIrregularidade" value={formData.dataIrregularidade} onChange={handleChange} className="modern-input h-6 text-xs px-2 w-32" />
+                  )}
+                  <div className="w-px bg-white/10 h-6"></div>
+                  <CheckboxField label="Licença/Afastamento" name="licenca" checked={formData.licenca} onChange={handleChange} />
+                  {formData.licenca && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-text-secondary">De:</span>
+                      <input type="date" name="dataLicencaDe" value={formData.dataLicencaDe} onChange={handleChange} className="modern-input h-6 text-xs px-2 w-32" />
+                      <span className="text-xs text-text-secondary">Até:</span>
+                      <input type="date" name="dataLicencaAte" value={formData.dataLicencaAte} onChange={handleChange} className="modern-input h-6 text-xs px-2 w-32" />
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -482,7 +833,7 @@ const MemberForm = ({ member, onClose }) => {
               )}
 
               <SectionTitle title="Frequência e Estatísticas (Leitura)" />
-              <div className="grid grid-cols-4 gap-4 p-4 bg-white/5 rounded-xl border border-white/5 mb-4">
+              <div className="grid grid-cols-6 gap-4 p-4 bg-white/5 rounded-xl border border-white/5 mb-4">
                 <div className="text-center">
                   <p className="text-[10px] text-[#99907C] uppercase tracking-wider mb-1">Nº Sessões</p>
                   <p className="text-2xl text-white font-bold">{formData.numeroSessoes}</p>
@@ -496,8 +847,16 @@ const MemberForm = ({ member, onClose }) => {
                   <p className="text-2xl text-red-400 font-bold">{formData.faltas}</p>
                 </div>
                 <div className="text-center">
+                  <p className="text-[10px] text-[#99907C] uppercase tracking-wider mb-1">Abstenções</p>
+                  <p className="text-2xl text-orange-400 font-bold">{formData.abstencoes}</p>
+                </div>
+                <div className="text-center">
                   <p className="text-[10px] text-[#99907C] uppercase tracking-wider mb-1">Frequência</p>
                   <p className="text-2xl text-[#D4AF37] font-bold">{formData.frequencia}%</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[10px] text-[#99907C] uppercase tracking-wider mb-1">Freq. p/ Voto</p>
+                  <p className="text-2xl text-[#D4AF37] font-bold">{formData.frequenciaVoto}%</p>
                 </div>
               </div>
 

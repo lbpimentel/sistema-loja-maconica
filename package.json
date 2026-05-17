@@ -5,15 +5,23 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "prisma generate && vite build",
+    "postinstall": "prisma generate",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@prisma/client": "^5.15.0",
+    "@supabase/supabase-js": "^2.105.4",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.14.0",
+    "pg": "^8.20.0",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "sqlite3": "^6.0.1",
+    "ws": "^8.20.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -24,6 +32,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
+    "prisma": "^5.15.0",
     "vite": "^5.4.11"
   }
 }

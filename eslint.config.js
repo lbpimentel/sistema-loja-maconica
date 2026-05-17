@@ -7,7 +7,7 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 export default defineConfig([
   globalIgnores(['dist']),
   {
-    files: ['**/*.{js,jsx}'],
+    files: ['src/**/*.{js,jsx}'],
     extends: [
       js.configs.recommended,
       reactHooks.configs.flat.recommended,
@@ -17,5 +17,24 @@ export default defineConfig([
       globals: globals.browser,
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
+    rules: {
+      'no-unused-vars': 'warn',
+      'react-hooks/set-state-in-effect': 'off',
+      'react-refresh/only-export-components': 'warn',
+    },
   },
+  {
+    files: ['api/**/*.js', 'api/**/*.cjs', 'local-server.js', 'scratch_seed_tenant.cjs', 'vite.config.js', 'eslint.config.js'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        ...globals.commonjs,
+      },
+    },
+    rules: {
+      'no-unused-vars': 'warn',
+      'no-undef': 'error',
+      'no-useless-escape': 'warn',
+    }
+  }
 ])

@@ -1,0 +1,379 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id                  Int          @id @default(autoincrement())
+  nome                String
+  numero              String
+  subdominio          String       @unique
+  cnpj                String?
+  potencia            String?
+  rito                String?
+  oriente             String?
+  uf                  String?
+  statusAssinatura    String       @default("TRIAL")
+  vencimentoAssinatura String?
+  maxMembros          Int          @default(50)
+  
+  users               User[]
+  members             Member[]
+  sessions            Session[]
+  candidates          Candidate[]
+
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+}
+
+model User {
+  id                  Int          @id @default(autoincrement())
+  email               String       @unique
+  passwordHash        String
+  role                String       @default("MEMBRO")
+  tenantId            Int          @default(1)
+  tenant              Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  createdAt           DateTime     @default(now())
+}
+
+model Member {
+  id                    Int             @id @default(autoincrement())
+  // Basics
+  codigo                String?
+  cim                   String?
+  ime                   String?
+  nome                  String
+  nascimento            String?
+  estadoCivil           String?
+  nacionalidade         String?
+  ufNascimento          String?
+  naturalidade          String?
+  naturalizacao         String?
+  religiao              String?
+  grauInstrucao         String?
+  cpf                   String?
+  rg                    String?
+  orgaoExpedidorRg      String?
+  tituloEleitoral       String?
+  zonaEleitoral         String?
+  secaoEleitoral        String?
+  cidadeEleitoral       String?
+  ufEleitoral           String?
+  carteiraEstrangeiro   String?
+  orgaoExpedidorEstrangeiro String?
+  sangue                String?
+  rh                    String?
+  doadorOrgaos          Boolean         @default(false)
+  reservista            String?
+  nomePai               String?
+  nomeMae               String?
+  foto                  String?
+  idiomas               String?
+  qrCode                String?
+  
+  // Residence
+  endereco              String?
+  numeroRes             String?
+  complementoRes        String?
+  bairro                String?
+  cidade                String?
+  estado                String?
+  cep                   String?
+  telefoneResidencial   String?
+  celular               String?
+  email                 String?
+  instagram             String?
+  facebook              String?
+  linkedin              String?
+  correspondencia       String?
+  caixaPostal           String?
+  receberEmailsLoja     Boolean         @default(false)
+  
+  // Work
+  empresa               String?
+  enderecoTrabalho      String?
+  numeroTrab            String?
+  bairroTrabalho        String?
+  cidadeTrabalho        String?
+  estadoTrabalho        String?
+  telefoneComercial     String?
+  profissao             String?
+  cepTrabalho           String?
+  cargoTrabalho         String?
+  funcaoTrabalho        String?
+
+  // Family - Conjuge
+  conjugeNome           String?
+  conjugeNascimento     String?
+  dataCasamento         String?
+  conjugeProfissao      String?
+  conjugeCargo          String?
+  conjugeFuncao         String?
+  conjugeEmpresa        String?
+  conjugeTelefone       String?
+  sangueConjuge         String?
+  rhConjuge             String?
+  doadorConjuge         Boolean         @default(false)
+  filhos                FamilyMember[]
+  lowtons               Lowton[]
+  apjs                  Apj[]
+
+  // Masonic
+  grau                  String?         @default("Mestre Maçom")
+  rito                  String?
+  potencia              String?
+  cargoLoja             String?
+  cargoPotencia         String?
+  direitoVoto           Boolean         @default(false)
+  peculio               String?
+  lojaAnterior          String?
+  
+  iniciacaoData         String?
+  iniciacaoPlacet       String?
+  iniciacaoLoja         String?
+  iniciacaoOriente      String?
+  iniciacaoUf           String?
+  iniciacaoPotencia     String?
+  
+  elevacaoData          String?
+  elevacaoPlacet        String?
+  elevacaoLoja          String?
+  elevacaoOriente       String?
+  elevacaoUf            String?
+  elevacaoPotencia      String?
+  
+  exaltacaoData         String?
+  exaltacaoPlacet       String?
+  exaltacaoLoja         String?
+  exaltacaoOriente      String?
+  exaltacaoUf           String?
+  exaltacaoPotencia     String?
+  
+  regularizacaoData     String?
+  regularizacaoPlacet   String?
+  filiacaoData          String?
+  filiacaoPlacet        String?
+  
+  instalacaoData        String?
+  instalacaoPlacet      String?
+  instalacaoLoja        String?
+  instalacaoOriente     String?
+  instalacaoUf          String?
+  instalacaoPotencia    String?
+  
+  dataDireitoVoto       String?
+
+  // Titles
+  tituloEmerito         String?
+  atoEmerito            String?
+  tituloRemido          String?
+  atoRemido             String?
+  tituloBenemerito      String?
+  atoBenemerito         String?
+  tituloGrandeBenemerito String?
+  atoGrandeBenemerito   String?
+  tituloEstrelaDistincao String?
+  atoEstrelaDistincao   String?
+  tituloCruzPerfeicao   String?
+  atoCruzPerfeicao      String?
+  tituloComendaPedro    String?
+  atoComendaPedro       String?
+  tituloGrandeMerito    String?
+  atoGrandeMerito       String?
+
+  // History & Control
+  status                String?         @default("Ativo")
+  loja                  String?         @default("Arls Major Manoel dos Santos Portugal")
+  cargosExercidos       MasonicRole[]
+  numeroSessoes         Int?            @default(0)
+  faltas                Int?            @default(0)
+  presencas             Int?            @default(0)
+  abstencoes            Int?            @default(0)
+  frequencia            Float?          @default(0)
+  frequenciaVoto        Float?          @default(0)
+  
+  attendances           Attendance[]
+  
+  categoria             String?
+  
+  irregular             Boolean         @default(false)
+  dataIrregularidade    String?
+  
+  licenca               Boolean         @default(false)
+  dataLicencaDe         String?
+  dataLicencaAte        String?
+  
+  observacoes           String?
+
+  tenantId              Int             @default(1)
+  tenant                Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+}
+
+model FamilyMember {
+  id              Int      @id @default(autoincrement())
+  nome            String
+  dataNascimento  String?
+  sexo            String?
+  membro          Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId        Int
+}
+
+model Lowton {
+  id              Int      @id @default(autoincrement())
+  nome            String
+  dataNascimento  String?
+  membro          Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId        Int
+}
+
+model Apj {
+  id              Int      @id @default(autoincrement())
+  nome            String
+  dataNascimento  String?
+  membro          Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId        Int
+}
+
+model MasonicRole {
+  id          Int      @id @default(autoincrement())
+  cargo       String
+  loja        String?
+  oriente     String?
+  gestao      String?
+  inicio      String?
+  termino     String?
+  membro      Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId    Int
+}
+
+// ==========================================
+// MÓDULO: SESSÕES E FREQUÊNCIAS
+// ==========================================
+
+model Session {
+  id               Int           @id @default(autoincrement())
+  nome             String
+  data             String
+  grau             String?
+  tipo             String?
+  pauta            String?
+  obs              String?
+  ataContent       String?   // Para redação direta (RTF/Rich Text)
+  ataFile          String?   // Conteúdo do arquivo (Base64)
+  ataFileName      String?   // Nome do arquivo original (.DOC)
+  direitoVoto      Boolean       @default(true)
+  ataTransformacao Boolean       @default(false)
+  
+  tenantId         Int           @default(1)
+  tenant           Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  attendances      Attendance[]
+}
+
+model Attendance {
+  id               Int           @id @default(autoincrement())
+  sessaoId         Int
+  sessao           Session       @relation(fields: [sessaoId], references: [id], onDelete: Cascade)
+  membroId         Int
+  membro           Member        @relation(fields: [membroId], references: [id], onDelete: Cascade)
+  
+  // "Presente", "Falta", "Abstenção", "Falta Justificada"
+  status           String
+  motivo           String?
+  obs              String?
+  
+  @@unique([sessaoId, membroId])
+}
+
+// ==========================================
+// MÓDULO: CADASTRO DE CANDIDATOS (PROFANOS)
+// ==========================================
+
+model Candidate {
+  id                    Int             @id @default(autoincrement())
+  codigo                String?
+  nome                  String
+  pai                   String?
+  mae                   String?
+  nascimento            String?
+  idade                 String?
+  cpf                   String?
+  rg                    String?
+  estadoCivil           String?
+  esposa                String?
+  profissao             String?
+  celular               String?
+  email                 String?
+  
+  // Residence
+  endereco              String?
+  numero                String?
+  cep                   String?
+  cidade                String?
+  estado                String?
+  bairro                String?
+  telefone              String?
+  
+  // Work
+  empresa               String?
+  telefoneEmpresa       String?
+  enderecoEmpresa       String?
+  cidadeEmpresa         String?
+  estadoEmpresa         String?
+  bairroEmpresa         String?
+  numeroEmpresa         String?
+  cepEmpresa            String?
+  
+  // Family - Conjugal
+  nascimentoConjuge     String?
+  profissaoConjuge      String?
+  cargoConjuge          String?
+  funcaoConjuge         String?
+  empresaConjuge        String?
+  telefoneConjuge       String?
+  dataCasamento         String?
+  
+  // Process progress tracking
+  status                String          @default("Em Andamento") // "Em Andamento", "Aprovado", "Iniciado", "Rejeitado", "Arquivado"
+  livroNegro            String?         
+  filiacao              String?         
+  naturalidade          String?         
+  sangue                String?         
+  rh                    String?         
+  
+  // Ballot results (Sindicância & Escrutínio)
+  brancas1              String?
+  pretas1               String?
+  brancas2              String?
+  pretas2               String?
+  brancas3              String?
+  pretas3               String?
+  
+  // Process steps (Balaústres and Dates)
+  dataProposta          String?         // DATA1
+  dataSindicancia       String?         // DATA2
+  dataEscrutinio        String?         // DATA3
+  dataIniciacao         String?         // DATA4
+  
+  balaustreProposta     String?         // BALAUST1
+  balaustreSindicancia  String?         // BALAUST2
+  balaustreEscrutinio   String?         // BALAUST3
+  balaustreIniciacao    String?         // BALAUST4
+  
+  observacoes           String?
+
+  tenantId              Int             @default(1)
+  tenant                Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+}
+
